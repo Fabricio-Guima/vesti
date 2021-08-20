@@ -2,12 +2,22 @@
 
 namespace App\Services;
 
+use App\Classes\Logger;
 use App\Exceptions\UserHasBeenTakenException;
 use App\Models\User;
 use Illuminate\Support\Str;
 
 
 class UserService {
+
+	private $logger;
+
+	public function __construct()
+	{
+		$this->logger = new Logger();
+		
+	}
+	
 	public function update(User $user,array $input){
 
 
@@ -21,16 +31,19 @@ class UserService {
 
 		}
 		
-	if(!empty($input['password'])){
-		$input['password'] = bcrypt($input['password']);
-	}
+		if(!empty($input['password'])){
+			$input['password'] = bcrypt($input['password']);
+		}
 
-	// funciona como o create e vc só usa o fill quando vc tiver uma instancia do seu model já criada e ele aceita um array
-	$user->fill($input);
-	$user->save();
+		// funciona como o create e vc só usa o fill quando vc tiver uma instancia do seu model já criada e ele aceita um array
+		$user->fill($input);
+		$user->save();
 
-	//garanto que as infos virão atualizadas
-	return $user->fresh();
+		//log
+		$this->logger->log('info', 'Fez atualização de perfil.');
+
+		//garanto que as infos virão atualizadas
+		return $user->fresh();
 
 	}
 }

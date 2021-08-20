@@ -2,11 +2,21 @@
 
 namespace App\Services;
 
+use App\Classes\Logger;
 use App\Exceptions\LoginInvalidException;
 use App\Exceptions\UserHasBeenTakenException;
 use App\Models\User;
 
+
 class AuthService {
+
+	private $logger;
+
+	public function __construct()
+	{
+		$this->logger = new Logger();
+		
+	}
 
 	public function login(string $email, string $password){
 
@@ -21,6 +31,9 @@ class AuthService {
 			throw new LoginInvalidException();
 
 		}
+
+		//log
+		$this->logger->log('info', 'Fez o seu login.');
 
 		return [
 			'token' => $token,
@@ -45,6 +58,9 @@ class AuthService {
 			'email' => $email,
 			'password' => $userPassword,
 		]);
+
+		//log
+		$this->logger->log('info', 'Fez o seu registro.');
 
 		return $user;
 

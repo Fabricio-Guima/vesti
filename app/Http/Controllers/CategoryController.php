@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Classes\Logger;
 use App\Http\Requests\CategoryStore;
 use App\Http\Requests\CategoryUpdateRequest;
 use App\Http\Requests\ProductStoreRequest;
@@ -13,7 +14,19 @@ use Illuminate\Support\Str;
 
 class CategoryController extends Controller
 {
+
+    private $logger;
+
+	public function __construct()
+	{
+		$this->logger = new Logger();
+		
+	}
+
     public function index(){
+
+       //log
+		$this->logger->log('info', 'Pegou todas as categorias.'); 
 
        return categoryResource::collection(auth()->user()->categories);
     }
@@ -23,6 +36,9 @@ class CategoryController extends Controller
         $this->authorize('view',$category);
         
         $category->load( 'products');
+
+        //log
+		$this->logger->log('info', 'Pegou uma categoria.'); 
         
         return new categoryResource($category);
         
@@ -34,6 +50,10 @@ class CategoryController extends Controller
         $input = $request->validated();
 
         $category = auth()->user()->categories()->create($input);
+
+
+        //log
+		$this->logger->log('info', 'Registrou uma categoria.'); 
 
         return new categoryResource($category);
 
@@ -48,6 +68,10 @@ class CategoryController extends Controller
         $category->fill($input);
         $category->save();
 
+
+        //log
+		$this->logger->log('info', 'Atualizou uma categoria.'); 
+
         return new categoryResource($category->fresh());
 
     }
@@ -57,6 +81,10 @@ class CategoryController extends Controller
         $this->authorize('destroy',$category);
         
         $category->delete();
+
+
+        //log
+		$this->logger->log('info', 'Excluiu uma categoria.'); 
         
         return '';
         
@@ -73,6 +101,10 @@ class CategoryController extends Controller
         $input['user_id'] = auth()->user()->id;
 
         $product = $category->products()->create($input);
+
+
+        //log
+		$this->logger->log('info', 'Adicionou uma categoria.'); 
 
         return new ProductResource($product);
 
